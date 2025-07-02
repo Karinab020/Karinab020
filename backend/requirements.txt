@@ -5,3 +5,4 @@ pydantic
 requests
 python-dotenv
 numpy
+replicate>=0.22.0

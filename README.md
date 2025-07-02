@@ -43,4 +43,7 @@ Este repositório contém um protótipo open-source de um aplicativo web de gera
 * Implementar edição/extend de trechos.
 * Criar versão mobile com React Native ou Flutter.
 
+Para geração real, crie uma conta em https://replicate.com, obtenha o **token de API** e exporte `REPLICATE_API_TOKEN` no seu terminal ou coloque em um arquivo `.env` na pasta `backend/`.
+O backend usará automaticamente o modelo **meta/musicgen** via API; caso o token não esteja definido ele cai no stub silencioso.
+
 Contribuições são bem-vindas! ✨
