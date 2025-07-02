@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Mureka Clone – AI Music Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background: #f5f6fa; }
+        h1 { color: #2c3e50; }
+        form { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        input, textarea, select { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
+        button { background: #3498db; color: #fff; padding: 0.7rem 1.2rem; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #2980b9; }
+        .songs { margin-top: 2rem; }
+        audio { width: 100%; margin-top: 0.5rem; }
+        .song-card { background: #fff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+    <h1>Mureka Clone – Criador de Música com IA</h1>
+    <form id="generateForm">
+        <label>Título da Música</label>
+        <input type="text" name="title" required />
+
+        <label>Letra</label>
+        <textarea name="lyrics" rows="4" placeholder="Digite a letra aqui..." required></textarea>
+
+        <label>Estilo / Gênero</label>
+        <select name="style">
+            <option value="pop">Pop</option>
+            <option value="rock">Rock</option>
+            <option value="hiphop">Hip-Hop</option>
+            <option value="jazz">Jazz</option>
+            <option value="electronic">Eletrônica</option>
+        </select>
+
+        <label>Áudio de Referência (opcional)</label>
+        <input type="file" name="reference" accept="audio/*" />
+
+        <button type="submit">Gerar Música</button>
+    </form>
+
+    <section class="songs" id="songsSection">
+        <h2>Suas músicas geradas</h2>
+        <div id="songsContainer"></div>
+    </section>
+
+    <script>
+        const backendUrl = "http://localhost:8000"; // ajuste se necessário
+
+        async function fetchSongs() {
+            const res = await fetch(`${backendUrl}/songs`);
+            const songs = await res.json();
+            const container = document.getElementById('songsContainer');
+            container.innerHTML = '';
+            songs.forEach(song => {
+                const card = document.createElement('div');
+                card.className = 'song-card';
+                card.innerHTML = `
+                    <h3>${song.title} <small style="font-weight: normal">(${song.style})</small></h3>
+                    <p><strong>Letra:</strong> ${song.lyrics}</p>
+                    <audio controls src="${backendUrl}/songs/${song.id}"></audio>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('generateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const data = new FormData(form);
+            try {
+                const res = await fetch(`${backendUrl}/generate`, {
+                    method: 'POST',
+                    body: data
+                });
+                if (!res.ok) throw new Error(await res.text());
+                await res.json();
+                form.reset();
+                fetchSongs();
+            } catch (err) {
+                alert('Erro ao gerar música: ' + err);
+            }
+        });
+
+        // Initial load
+        fetchSongs();
+    </script>
+</body>
+</html>
